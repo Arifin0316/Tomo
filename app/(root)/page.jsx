@@ -1,39 +1,22 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { getComments } from "@/lib/posting"; // Corrected function name
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-  const postId = "cm6qrlkvw0002dfv4zwq6c7jo"; // Your specific post ID
-  
-  // Fetch comments for the specific post
-  const comments = await getComments(postId);
-  console.log(comments)
 
-  if (!session) {
-    return <p>Not logged in</p>;
-  }
-
+import HomeFeed from "@/components/home/HomeFeed";
+import Suggestions from "@/components/home/Suggestions";
+import { fetchHomePosts, fetchSuggestions } from "@/lib/home"
+export default async function HomePage() {
+  const [posts, suggestions] = await Promise.all([
+    fetchHomePosts(),
+    fetchSuggestions()
+  ]);
+ 
   return (
-    <div>
-      <h1>Welcome, {session.user.username}!</h1>
-      <p>User ID: {session.user.id}</p>
-      <p>Email: {session.user.email}</p>
-      
-      {/* Optional: Display comments */}
-      <div>
-        <h2>Comments:</h2>
-        {comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment.id}>
-              <p>{comment.content}</p>
-              <small>By: {comment.user.username}</small>
-            </div>
-          ))
-        ) : (
-          <p>No comments found</p>
-        )}
+    <div className="container mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 py-8">
+      <div className="col-span-1 md:col-span-3 lg:col-span-2 lg:col-start-2">
+        <HomeFeed initialPosts={posts} />
+      </div>
+      <div className="hidden md:block lg:col-span-1 lg:col-start-3">
+        <Suggestions initialSuggestions={suggestions} />
       </div>
     </div>
   );
-}
+ }

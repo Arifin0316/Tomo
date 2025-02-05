@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { 
-  Home, Search, PlusSquare, Heart, User,
+  Home, Search, PlusSquare, Heart, User, LogIn, LogOut,
   MessageCircle, Compass, Menu
 } from 'lucide-react';
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import CreatePostModal from '@/components/CreatePostModal/CreatePostModal';
 
 const NavItem = ({ icon, label, href, isActive, onClick }) => {
@@ -49,7 +49,21 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const navItems = [
+  const loginItem = {
+    icon: <LogIn />, 
+    label: 'Login', 
+    href: '/login', 
+    onClick: () => signIn()
+  };
+
+  const logoutItem = {
+    icon: <LogOut />, 
+    label: 'Logout', 
+    href: '#', 
+    onClick: () => signOut({ callbackUrl: '/login' })
+  };
+
+  const navItems = session ? [
     { icon: <Home />, label: 'Beranda', href: '/' },
     { icon: <Search />, label: 'Cari', href: '/search' },
     { icon: <Compass />, label: 'Jelajah', href: '/explore' },
@@ -62,6 +76,11 @@ export default function Sidebar() {
       onClick: () => setIsCreateModalOpen(true) 
     },
     { icon: <User />, label: 'Profil', href:`/profile/${session?.user?.username}`},
+    logoutItem
+  ] : [
+    { icon: <Home />, label: 'Beranda', href: '/' },
+    { icon: <Compass />, label: 'Jelajah', href: '/explore' },
+    loginItem
   ];
 
   return (
@@ -110,7 +129,7 @@ export default function Sidebar() {
               );
             }
             return (
-              <Link key={item.href} href={item.href}>
+              <Link key={item.href} href={item.href} onClick={item.onClick}>
                 <div className={`p-2 rounded-lg ${pathname === item.href ? 'text-blue-500' : ''}`}>
                   <div className="w-6 h-6">
                     {item.icon}
