@@ -10,7 +10,26 @@ import {
 import { useSession, signIn, signOut } from "next-auth/react";
 import CreatePostModal from '@/components/CreatePostModal/CreatePostModal';
 
-const NavItem = ({ icon, label, href, isActive, onClick }) => {
+const NavItem = ({ icon, label, href, isActive, onClick, isAuthAction }) => {
+  // Handle auth actions (login/logout) differently
+  if (isAuthAction) {
+    return (
+      <div onClick={onClick} className="cursor-pointer">
+        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
+          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
+          <div className="w-6 h-6">
+            {icon}
+          </div>
+          <span className={`hidden sm:block text-sm font-medium
+            ${isActive ? 'font-semibold' : ''}`}>
+            {label}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle Create Post button
   if (label === 'Buat') {
     return (
       <div onClick={onClick} className="cursor-pointer">
@@ -28,6 +47,7 @@ const NavItem = ({ icon, label, href, isActive, onClick }) => {
     );
   }
 
+  // Regular nav items
   return (
     <Link href={href}>
       <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
@@ -49,18 +69,30 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    signIn();
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    signOut({ callbackUrl: '/login' });
+  };
+
   const loginItem = {
     icon: <LogIn />, 
     label: 'Login', 
-    href: '/login', 
-    onClick: () => signIn()
+    href: '#',
+    onClick: handleLogin,
+    isAuthAction: true
   };
 
   const logoutItem = {
     icon: <LogOut />, 
     label: 'Logout', 
-    href: '#', 
-    onClick: () => signOut({ callbackUrl: '/login' })
+    href: '#',
+    onClick: handleLogout,
+    isAuthAction: true
   };
 
   const navItems = session ? [
@@ -72,10 +104,10 @@ export default function Sidebar() {
     { 
       icon: <PlusSquare />, 
       label: 'Buat', 
-      href: '/create', 
+      href: '#', 
       onClick: () => setIsCreateModalOpen(true) 
     },
-    { icon: <User />, label: 'Profil', href:`/profile/${session?.user?.username}`},
+    { icon: <User />, label: 'Profil', href: `/profile/${session?.user?.username}` },
     logoutItem
   ] : [
     { icon: <Home />, label: 'Beranda', href: '/' },
@@ -95,12 +127,13 @@ export default function Sidebar() {
         <nav className="flex-1 px-2">
           {navItems.map((item) => (
             <NavItem
-              key={item.href}
+              key={item.label}
               icon={item.icon}
               label={item.label}
               href={item.href}
               isActive={pathname === item.href}
               onClick={item.onClick}
+              isAuthAction={item.isAuthAction}
             />
           ))}
         </nav>
@@ -117,9 +150,9 @@ export default function Sidebar() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t sm:hidden">
         <nav className="flex justify-around py-2">
           {navItems.map((item) => {
-            if (item.label === 'Buat') {
+            if (item.label === 'Buat' || item.isAuthAction) {
               return (
-                <div key={item.href} onClick={item.onClick}>
+                <div key={item.label} onClick={item.onClick} className="cursor-pointer">
                   <div className={`p-2 rounded-lg ${pathname === item.href ? 'text-blue-500' : ''}`}>
                     <div className="w-6 h-6">
                       {item.icon}
@@ -129,7 +162,7 @@ export default function Sidebar() {
               );
             }
             return (
-              <Link key={item.href} href={item.href} onClick={item.onClick}>
+              <Link key={item.label} href={item.href}>
                 <div className={`p-2 rounded-lg ${pathname === item.href ? 'text-blue-500' : ''}`}>
                   <div className="w-6 h-6">
                     {item.icon}
