@@ -1,23 +1,24 @@
-// components/Profile/ProfileStats.js
-import React from 'react';
-
 const ProfileStats = ({ postsCount, followersCount, followingCount }) => {
   return (
-    <div className="flex justify-around py-4 border-b">
-      <div className="text-center">
-        <span className="font-bold">{postsCount}</span>
-        <p className="text-sm text-gray-600">Posts</p>
-      </div>
-      <div className="text-center">
-        <span className="font-bold">{followersCount}</span>
-        <p className="text-sm text-gray-600">Followers</p>
-      </div>
-      <div className="text-center">
-        <span className="font-bold">{followingCount}</span>
-        <p className="text-sm text-gray-600">Following</p>
+    <div className="bg-white rounded-xl shadow-sm">
+      <div className="grid grid-cols-3 py-6 gap-4">
+        <StatItem label="Posts" count={postsCount} />
+        <StatItem label="Followers" count={followersCount} />
+        <StatItem label="Following" count={followingCount} />
       </div>
     </div>
   );
-};
-
-export default ProfileStats;
+ };
+ 
+ const StatItem = ({ label, count }) => (
+  <div className="text-center">
+    <span className="block text-2xl font-bold text-gray-900">
+      {count.toLocaleString()}
+    </span>
+    <span className="text-sm font-medium text-gray-500">
+      {label}
+    </span>
+  </div>
+ );
+ 
+ export default ProfileStats;

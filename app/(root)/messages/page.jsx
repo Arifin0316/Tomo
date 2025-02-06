@@ -6,17 +6,27 @@ import ChatDetail from '@/components/message/ChatDetail';
 
 export default function ChatPage() {
   const [selectedChat, setSelectedChat] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
+  const [chatListKey, setChatListKey] = useState(0);
+  const refreshChatList = () => setChatListKey(prev => prev + 1);
+
+  const handleSelectChat = (chat) => {
+    setSelectedChat(chat);
+    setShowDetail(true);
+    if (refreshChatList) refreshChatList(); 
+  };
 
   return (
     <div className="flex h-screen bg-white">
-      {/* Chat List Sidebar */}
-      <div className="w-full md:w-96 border-r border-gray-200">
-        <ChatList onSelectChat={setSelectedChat} />
+      <div className={`${showDetail ? 'hidden' : 'w-full'} md:w-96 md:block border-r border-gray-200`}>
+      <ChatList key={chatListKey} onSelectChat={handleSelectChat} refreshChatList={refreshChatList} />
       </div>
       
-      {/* Chat Detail (Hidden on mobile) */}
-      <div className="hidden md:block flex-1">
-        <ChatDetail selectedChat={selectedChat} />
+      <div className={`${showDetail ? 'w-full' : 'hidden'} md:block flex-1`}>
+        <ChatDetail 
+          selectedChat={selectedChat} 
+          onBack={() => setShowDetail(false)}
+        />
       </div>
     </div>
   );

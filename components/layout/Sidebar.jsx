@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { 
   Home, Search, PlusSquare, Heart, User, LogIn, LogOut,
@@ -10,25 +10,9 @@ import {
 import { useSession, signIn, signOut } from "next-auth/react";
 import CreatePostModal from '@/components/CreatePostModal/CreatePostModal';
 import SearchComponent from '@/components/Search/SearchComponent';
+import { getChatList } from "@/lib/message"
 
 const NavItem = ({ icon, label, href, isActive, onClick, isAuthAction }) => {
-  // Handle auth actions (login/logout) differently
-  if (isAuthAction) {
-    return (
-      <div onClick={onClick} className="cursor-pointer">
-        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
-          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
-          <div className="w-6 h-6">
-            {icon}
-          </div>
-          <span className={`hidden sm:block text-sm font-medium
-            ${isActive ? 'font-semibold' : ''}`}>
-            {label}
-          </span>
-        </div>
-      </div>
-    );
-  }
 
   // Handle Create Post button
   if (label === 'Buat') {
@@ -88,34 +72,30 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    async function getUnreadCount() {
+      if (session?.user?.id) {
+        const chats = await getChatList(session.user.id);
+        const total = chats.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+        setUnreadCount(total);
+      }
+    }
+    getUnreadCount();
+    const interval = setInterval(getUnreadCount, 3000);
+    return () => clearInterval(interval);
+  }, [session]);
 
   const handleLogin = (e) => {
     e.preventDefault();
     signIn();
   };
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    signOut({ callbackUrl: '/login' });
-  };
 
-  const loginItem = {
-    icon: <LogIn />, 
-    label: 'Login', 
-    href: '#',
-    onClick: handleLogin,
-    isAuthAction: true
-  };
 
-  const logoutItem = {
-    icon: <LogOut />, 
-    label: 'Logout', 
-    href: '#',
-    onClick: handleLogout,
-    isAuthAction: true
-  };
 
-  const navItems = session ? [
+  const navItems =  [
     { icon: <Home />, label: 'Beranda', href: '/' },
     { 
       icon: <Search />, 
@@ -126,8 +106,20 @@ export default function Sidebar() {
       }
     },
     { icon: <Compass />, label: 'Jelajah', href: '/explore' },
-    { icon: <MessageCircle />, label: 'Pesan', href: '/messages' },
-    { icon: <Heart />, label: 'Notifikasi', href: '/notifications' },
+    { 
+      icon: (
+        <div className="relative">
+          <MessageCircle />
+          {unreadCount > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {unreadCount}
+            </div>
+          )}
+        </div>
+      ), 
+      label: 'Pesan', 
+      href: '/messages' 
+    },
     { 
       icon: <PlusSquare />, 
       label: 'Buat', 
@@ -135,19 +127,6 @@ export default function Sidebar() {
       onClick: () => setIsCreateModalOpen(true) 
     },
     { icon: <User />, label: 'Profil', href: `/profile/${session?.user?.username}` },
-    logoutItem
-  ] : [
-    { icon: <Home />, label: 'Beranda', href: '/' },
-    { 
-      icon: <Search />, 
-      label: 'Cari', 
-      href: '#', 
-      onClick: () => {
-        setIsSearchModalOpen(true);
-      }
-    },
-    { icon: <Compass />, label: 'Jelajah', href: '/explore' },
-    loginItem
   ];
 
   return (

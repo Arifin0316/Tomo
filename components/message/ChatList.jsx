@@ -3,7 +3,7 @@ import { Edit, Search } from 'lucide-react';
 import { getChatList } from '@/lib/message';
 import { useSession } from 'next-auth/react';
 
-export default function ChatList({ onSelectChat }) {
+export default function ChatList({ onSelectChat, refreshChatList }) {
   const { data: session } = useSession();
   const [chats, setChats] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,6 +21,8 @@ export default function ChatList({ onSelectChat }) {
   const filteredChats = chats.filter(chat => 
     chat.user?.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const unreadCount = chats
+  console.log(unreadCount)
 
   return (
     <div className="h-full flex flex-col">

@@ -10,17 +10,25 @@ export default async function HomePage() {
   ]);
  
   return (
-    <div className="container mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 py-8">
-      <div className="col-span-1 md:col-span-2 lg:col-span-2 relative">
-        {/* Tampilkan Search hanya di mobile */}
-        <div className="block md:hidden mb-4">
-          <Search />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto max-w-5xl px-4 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="col-span-1 md:col-span-2">
+            <div className="md:hidden mb-4">
+              <Search />
+            </div>
+            <div className="bg-white rounded-xl shadow-sm">
+              <HomeFeed initialPosts={posts} />
+            </div>
+          </div>
+          
+          <div className="hidden md:block sticky top-20">
+            <div className="bg-white rounded-xl shadow-sm p-4">
+              <Suggestions initialSuggestions={suggestions} />
+            </div>
+          </div>
         </div>
-        <HomeFeed initialPosts={posts} />
-      </div>
-      <div className="hidden md:block md:col-span-1 lg:col-span-1">
-        <Suggestions initialSuggestions={suggestions} />
       </div>
     </div>
   );
-}
+ }

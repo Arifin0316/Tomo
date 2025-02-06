@@ -1,36 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  MoreHorizontal, 
-  Phone, 
-  Video, 
-  Smile, 
-  Send, 
-  Image, 
-  Paperclip 
-} from 'lucide-react';
-import { getChatMessages, sendMessage } from '@/lib/message';
-import { useSession } from 'next-auth/react';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  ArrowLeft,
+  MoreHorizontal,
+  Phone,
+  Video,
+  Smile,
+  Send,
+  Image,
+  Paperclip,
+} from "lucide-react";
+import { getChatMessages, sendMessage, markMessagesAsRead } from "@/lib/message";
+import { useSession } from "next-auth/react";
 
-export default function ChatDetail({ selectedChat }) {
+export default function ChatDetail({ selectedChat, onBack }) {
   const { data: session } = useSession();
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
 
   const loadMessages = useCallback(async () => {
     if (selectedChat && session?.user?.id) {
       const chatMessages = await getChatMessages(
-        selectedChat.chatId, 
+        selectedChat.chatId,
         session.user.id
       );
-      
+
       // Only update if there are new messages
-      setMessages(prevMessages => {
+      setMessages((prevMessages) => {
         // Compare the length and last message to avoid unnecessary updates
         if (
-          chatMessages.length !== prevMessages.length || 
-          (chatMessages.length > 0 && 
-           prevMessages.length > 0 && 
-           chatMessages[chatMessages.length - 1].id !== prevMessages[prevMessages.length - 1].id)
+          chatMessages.length !== prevMessages.length ||
+          (chatMessages.length > 0 &&
+            prevMessages.length > 0 &&
+            chatMessages[chatMessages.length - 1].id !==
+              prevMessages[prevMessages.length - 1].id)
         ) {
           return chatMessages;
         }
@@ -57,33 +59,36 @@ export default function ChatDetail({ selectedChat }) {
       const optimisticMessage = {
         id: `temp-${Date.now()}`,
         content: newMessage,
-        type: 'sent',
-        timestamp: new Date().toISOString()
+        type: "sent",
+        timestamp: new Date().toISOString(),
       };
 
       // Update UI immediately
-      setMessages(prevMessages => [...prevMessages, optimisticMessage]);
-      setNewMessage('');
+      setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
+      setNewMessage("");
 
       try {
         // Send message to server
-        await sendMessage(
-          selectedChat.chatId, 
-          session.user.id, 
-          newMessage
-        );
+        await sendMessage(selectedChat.chatId, session.user.id, newMessage);
 
         // Refresh messages to get the actual server-side message
         loadMessages();
       } catch (error) {
-        console.error('Failed to send message', error);
+        console.error("Failed to send message", error);
         // Remove optimistic message if send fails
-        setMessages(prevMessages => 
-          prevMessages.filter(msg => msg.id !== optimisticMessage.id)
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== optimisticMessage.id)
         );
       }
     }
   };
+
+  useEffect(() => {
+    if (selectedChat && session?.user?.id) {
+      markMessagesAsRead(selectedChat.chatId, session.user.id);
+      loadMessages();
+    }
+  }, [selectedChat, session?.user?.id]);
 
   if (!selectedChat) {
     return (
@@ -98,9 +103,14 @@ export default function ChatDetail({ selectedChat }) {
       {/* Chat Header */}
       <div className="p-4 flex justify-between items-center border-b">
         <div className="flex items-center">
-          <img 
-            src={selectedChat.user?.profile?.profilePic || "/default-profile.png"} 
-            alt={selectedChat.user?.username} 
+          <button onClick={onBack} className="mr-2 md:hidden">
+            <ArrowLeft size={24} />
+          </button>
+          <img
+            src={
+              selectedChat.user?.profile?.profilePic || "/default-profile.png"
+            }
+            alt={selectedChat.user?.username}
             className="w-10 h-10 rounded-full mr-3"
           />
           <div>
@@ -123,16 +133,18 @@ export default function ChatDetail({ selectedChat }) {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map(message => (
-          <div 
-            key={message.id} 
-            className={`flex ${message.type === 'sent' ? 'justify-end' : 'justify-start'}`}
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.type === "sent" ? "justify-end" : "justify-start"
+            }`}
           >
-            <div 
+            <div
               className={`max-w-xs p-3 rounded-2xl ${
-                message.type === 'sent' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 text-black'
+                message.type === "sent"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-black"
               }`}
             >
               {message.content}
@@ -156,7 +168,7 @@ export default function ChatDetail({ selectedChat }) {
           <Paperclip size={24} className="text-gray-600" />
         </button>
         <div className="flex-1">
-          <input 
+          <input
             type="text"
             placeholder="Kirim pesan..."
             value={newMessage}
@@ -164,17 +176,12 @@ export default function ChatDetail({ selectedChat }) {
             className="w-full p-2 bg-gray-100 rounded-full focus:outline-none"
           />
         </div>
-        <button 
-          onClick={handleSendMessage}
-          disabled={!newMessage.trim()}
-        >
-          <Send 
-            size={24} 
+        <button onClick={handleSendMessage} disabled={!newMessage.trim()}>
+          <Send
+            size={24}
             className={`${
-              newMessage.trim() 
-                ? 'text-blue-500' 
-                : 'text-gray-400'
-            }`} 
+              newMessage.trim() ? "text-blue-500" : "text-gray-400"
+            }`}
           />
         </button>
       </div>
