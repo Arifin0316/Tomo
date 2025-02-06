@@ -3,11 +3,14 @@
 import { useState, useTransition } from "react";
 import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import PostDetailModal from "@/components/CreatePostModal/PostDetailModal";
+import { createOrGetChat, sendMessage } from "@/lib/message";
+import { useSession } from "next-auth/react";
 import { togglePostLike } from "@/lib/home";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
 const HomeFeed = ({ initialPosts }) => {
+  const { data: session } = useSession();
   const [posts, setPosts] = useState(initialPosts);
   const [selectedPost, setSelectedPost] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -18,37 +21,61 @@ const HomeFeed = ({ initialPosts }) => {
     setSelectedUser(user);
   };
 
+  const handleSendMessage = async (receiverId) => {
+    if (!session?.user?.id) {
+      toast.error("Please log in to send a message");
+      return;
+    }
+
+    try {
+      // Create or get existing chat
+      const chat = await createOrGetChat(session.user.id, receiverId);
+
+      // Prompt for message content (you might want to replace this with a modal or more sophisticated input)
+      const messageContent = prompt("Enter your message:");
+
+      if (messageContent) {
+        await sendMessage(chat.id, session.user.id, messageContent);
+        toast.success("Message sent!");
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message");
+    }
+  };
+
   const handleLike = (postId) => {
     startTransition(async () => {
       try {
         const result = await togglePostLike(postId);
-        
+
         if (result.success) {
           // Update posts state to reflect like/unlike
-          const updatedPosts = posts.map(post => 
-            post.id === postId 
+          const updatedPosts = posts.map((post) =>
+            post.id === postId
               ? {
                   ...post,
-                  likes: result.action === 'liked'
-                    ? [...post.likes, { userId: 'current_user' }]
-                    : post.likes.filter(like => like.userId !== 'current_user')
+                  likes:
+                    result.action === "liked"
+                      ? [...post.likes, { userId: "current_user" }]
+                      : post.likes.filter(
+                          (like) => like.userId !== "current_user"
+                        ),
                 }
               : post
           );
-          
+
           setPosts(updatedPosts);
 
           // Show toast notification
-          toast(result.action === 'liked' 
-            ? 'Post liked!' 
-            : 'Post unliked', 
-            { icon: result.action === 'liked' ? '❤️' : '💔' }
-          );
+          toast(result.action === "liked" ? "Post liked!" : "Post unliked", {
+            icon: result.action === "liked" ? "❤️" : "💔",
+          });
         } else {
           toast.error(result.message);
         }
       } catch (error) {
-        toast.error('Failed to toggle like');
+        toast.error("Failed to toggle like");
       }
     });
   };
@@ -56,24 +83,27 @@ const HomeFeed = ({ initialPosts }) => {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <div 
-          key={post.id} 
+        <div
+          key={post.id}
           className="bg-white border rounded-lg overflow-hidden"
         >
           {/* Post Header */}
           <div className="flex items-center p-4">
-            <Link href={`profile/${post.user.username}`} className="flex items-center">
-            <img
-              src={post.user.profile?.profilePic || "/default-profile.png"}
-              alt={`${post.user.username}'s profile`}
-              className="w-10 h-10 rounded-full mr-3"
-            />
-            <span className="font-semibold">{post.user.username}</span>
+            <Link
+              href={`profile/${post.user.username}`}
+              className="flex items-center"
+            >
+              <img
+                src={post.user.profile?.profilePic || "/default-profile.png"}
+                alt={`${post.user.username}'s profile`}
+                className="w-10 h-10 rounded-full mr-3"
+              />
+              <span className="font-semibold">{post.user.username}</span>
             </Link>
           </div>
 
           {/* Post Image */}
-          <div 
+          <div
             onClick={() => handlePostSelect(post, post.user)}
             className="cursor-pointer"
           >
@@ -88,30 +118,33 @@ const HomeFeed = ({ initialPosts }) => {
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex space-x-4">
-                <button 
+                <button
                   onClick={() => handleLike(post.id)}
                   disabled={isPending}
                   className={`hover:text-gray-600 ${
-                    post.likes.some(like => like.userId === 'current_user') 
-                      ? 'text-red-500' 
-                      : ''
+                    post.likes.some((like) => like.userId === "current_user")
+                      ? "text-red-500"
+                      : ""
                   }`}
                 >
-                  <Heart 
+                  <Heart
                     className={`w-6 h-6 ${
-                      post.likes.some(like => like.userId === 'current_user') 
-                        ? 'fill-current' 
-                        : ''
-                    }`} 
+                      post.likes.some((like) => like.userId === "current_user")
+                        ? "fill-current"
+                        : ""
+                    }`}
                   />
                 </button>
-                <button 
+                <button
                   onClick={() => handlePostSelect(post, post.user)}
                   className="hover:text-gray-600"
                 >
                   <MessageCircle className="w-6 h-6" />
                 </button>
-                <button className="hover:text-gray-600">
+                <button
+                  onClick={() => handleSendMessage(post.user.id)}
+                  className="hover:text-gray-600"
+                >
                   <Send className="w-6 h-6" />
                 </button>
               </div>
@@ -122,15 +155,13 @@ const HomeFeed = ({ initialPosts }) => {
 
             {/* Likes and Caption */}
             <div>
-              <p className="font-semibold mb-1">
-                {post.likes.length} likes
-              </p>
+              <p className="font-semibold mb-1">{post.likes.length} likes</p>
               <p>
                 <span className="font-semibold mr-2">{post.user.username}</span>
                 {post.content}
               </p>
               {post.comments.length > 0 && (
-                <button 
+                <button
                   onClick={() => handlePostSelect(post, post.user)}
                   className="text-gray-500 mt-1"
                 >
@@ -144,13 +175,13 @@ const HomeFeed = ({ initialPosts }) => {
 
       {/* Post Detail Modal */}
       {selectedPost && selectedUser && (
-        <PostDetailModal 
+        <PostDetailModal
           user={selectedUser}
           post={selectedPost}
           onClose={() => {
             setSelectedPost(null);
             setSelectedUser(null);
-          }} 
+          }}
         />
       )}
     </div>
