@@ -10,25 +10,30 @@ export default async function HomePage() {
   ]);
  
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-5xl px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="col-span-1 md:col-span-2">
-            <div className="md:hidden mb-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <div className="md:hidden">
               <Search />
             </div>
-            <div className="bg-white rounded-xl shadow-sm">
+            
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
               <HomeFeed initialPosts={posts} />
             </div>
           </div>
           
-          <div className="hidden md:block sticky top-20">
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              <Suggestions initialSuggestions={suggestions} />
+          <div className="hidden md:block">
+            <div className="sticky top-20">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+                <div className="p-6">
+                  <Suggestions initialSuggestions={suggestions} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
- }
+}
