@@ -5,7 +5,7 @@ import { MoreVertical, Edit, LogOut, Sun, Moon } from 'lucide-react';
 import { toggleFollow } from "@/lib/home";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-const ProfileHeader = ({ user, isOwnProfile }) => {
+const ProfileHeader = ({followers, user, isOwnProfile }) => {
   const [isFollowing, setIsFollowing] = useState(user.isFollowing || false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -16,7 +16,7 @@ const ProfileHeader = ({ user, isOwnProfile }) => {
       
       if (result.success) {
         // Update state berdasarkan aksi
-        setIsFollowing(result.action === 'followed');
+        setIsFollowing(!isFollowing);
       } else {
         // Tangani error, misalnya tampilkan pesan
         console.error(result.message);
