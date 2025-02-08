@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { 
-  Home, Search, PlusSquare, Heart, User, LogIn, LogOut,
-  MessageCircle, Compass, Menu
+  Home, Search, PlusSquare, User, MessageCircle, Compass
 } from 'lucide-react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import CreatePostModal from '@/components/CreatePostModal/CreatePostModal';
@@ -13,17 +12,18 @@ import SearchComponent from '@/components/Search/SearchComponent';
 import { getChatList } from "@/lib/message"
 
 const NavItem = ({ icon, label, href, isActive, onClick, isAuthAction }) => {
-
   // Handle Create Post button
   if (label === 'Buat') {
     return (
       <div onClick={onClick} className="cursor-pointer">
-        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
-          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
-          <div className="w-6 h-6">
+        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors duration-300
+          ${isActive 
+            ? 'bg-gray-100 dark:bg-gray-700' 
+            : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+          <div className="w-6 h-6 text-gray-700 dark:text-gray-300">
             {icon}
           </div>
-          <span className={`hidden sm:block text-sm font-medium
+          <span className={`hidden sm:block text-sm font-medium text-gray-800 dark:text-white
             ${isActive ? 'font-semibold' : ''}`}>
             {label}
           </span>
@@ -35,12 +35,14 @@ const NavItem = ({ icon, label, href, isActive, onClick, isAuthAction }) => {
   if (label === 'Cari') {
     return (
       <div onClick={onClick} className="cursor-pointer">
-        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
-          ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
-          <div className="w-6 h-6">
+        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors duration-300
+          ${isActive 
+            ? 'bg-gray-100 dark:bg-gray-700' 
+            : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+          <div className="w-6 h-6 text-gray-700 dark:text-gray-300">
             {icon}
           </div>
-          <span className={`hidden sm:block text-sm font-medium
+          <span className={`hidden sm:block text-sm font-medium text-gray-800 dark:text-white
             ${isActive ? 'font-semibold' : ''}`}>
             {label}
           </span>
@@ -49,16 +51,17 @@ const NavItem = ({ icon, label, href, isActive, onClick, isAuthAction }) => {
     );
   }
 
-
   // Regular nav items
   return (
     <Link href={href}>
-      <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors
-        ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
-        <div className="w-6 h-6">
+      <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors duration-300
+        ${isActive 
+          ? 'bg-gray-100 dark:bg-gray-700' 
+          : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+        <div className="w-6 h-6 text-gray-700 dark:text-gray-300">
           {icon}
         </div>
-        <span className={`hidden sm:block text-sm font-medium
+        <span className={`hidden sm:block text-sm font-medium text-gray-800 dark:text-white
           ${isActive ? 'font-semibold' : ''}`}>
           {label}
         </span>
@@ -91,9 +94,6 @@ export default function Sidebar() {
     e.preventDefault();
     signIn();
   };
-
-
-
 
   const navItems =  [
     { icon: <Home />, label: 'Beranda', href: '/' },
@@ -132,7 +132,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar for tablet and desktop */}
-      <div className="hidden sm:fixed sm:flex sm:left-0 sm:h-full border-r bg-white sm:w-16 md:w-64 py-4 flex-col relative">
+      <div className="hidden z-50 sm:fixed sm:flex sm:left-0 sm:h-full border-r bg-white dark:bg-gray-900 dark:border-gray-700 sm:w-16 md:w-64 py-4 flex-col relative transition-colors duration-300">
         {/* Bagian navbar */}
         <nav className="flex-1 px-2">
           {navItems.map((item) => (
@@ -161,13 +161,14 @@ export default function Sidebar() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t sm:hidden">
+      <div className="fixed z-50 bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-700 sm:hidden transition-colors duration-300">
         <nav className="flex justify-around py-2">
           {navItems.map((item) => {
             if (item.label === 'Buat' || item.isAuthAction) {
               return (
                 <div key={item.label} onClick={item.onClick} className="cursor-pointer">
-                  <div className={`p-2 rounded-lg ${pathname === item.href ? 'text-blue-500' : ''}`}>
+                  <div className={`p-2 rounded-lg text-gray-700 dark:text-gray-300 
+                    ${pathname === item.href ? 'text-blue-500 dark:text-blue-400' : ''}`}>
                     <div className="w-6 h-6">
                       {item.icon}
                     </div>
@@ -177,7 +178,8 @@ export default function Sidebar() {
             }
             return (
               <Link key={item.label} href={item.href}>
-                <div className={`p-2 rounded-lg ${pathname === item.href ? 'text-blue-500' : ''}`}>
+                <div className={`p-2 rounded-lg text-gray-700 dark:text-gray-300 
+                  ${pathname === item.href ? 'text-blue-500 dark:text-blue-400' : ''}`}>
                   <div className="w-6 h-6">
                     {item.icon}
                   </div>
@@ -193,7 +195,6 @@ export default function Sidebar() {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
       />
-      
     </>
   );
 }

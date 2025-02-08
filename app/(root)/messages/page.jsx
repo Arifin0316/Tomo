@@ -17,7 +17,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <div className={`${showDetail ? 'hidden' : 'w-full'} md:w-96 md:block border-r border-gray-200`}>
       <ChatList key={chatListKey} onSelectChat={handleSelectChat} refreshChatList={refreshChatList} />
       </div>

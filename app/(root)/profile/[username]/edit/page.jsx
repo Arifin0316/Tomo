@@ -4,6 +4,7 @@ import { editProfile } from '@/lib/profile';
 import { redirect } from 'next/navigation';
 
 export default async function EditProfilePage({ params }) {
+ 
   const username = (await params).username;
   const user = await getProfile(username);
 
@@ -23,8 +24,7 @@ export default async function EditProfilePage({ params }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Profile</h1>
+    <div className="p-6 bg-white dark:bg-gray-900">
       <EditProfileForm 
         user={user} 
         onSave={handleSubmit} 

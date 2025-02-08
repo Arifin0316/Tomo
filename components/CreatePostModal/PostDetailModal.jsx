@@ -5,6 +5,7 @@ import CommentsSection from "@/components/CreatePostModal/CommentsSection";
 import CommentInput from "@/components/CreatePostModal/CommentInput";
 import EditPostModal from "@/components/CreatePostModal/EditPostModal";
 import { deletePost } from "@/lib/posting";
+import { useSession } from "next-auth/react";
 
 const UserOptionsDropdown = ({ user, post, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +81,7 @@ const UserOptionsDropdown = ({ user, post, onEdit, onDelete }) => {
 };
 
 const PostDetailModal = ({ user, onClose, post: initialPost }) => {
+  const { data: session, status } = useSession();
   const [post, setPost] = useState(initialPost);
   const [refreshComments, setRefreshComments] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -87,9 +89,7 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
 
   return (
     <>
-      <Toaster position="top-right" />
-      
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 h-screen w-full bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="relative bg-white dark:bg-gray-900 rounded-2xl w-full max-w-4xl shadow-2xl transform transition-all">
           {/* Responsive container */}
           <div className="flex flex-col md:flex-row">
@@ -120,13 +120,13 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {user.id === post.userId && (
-                      <UserOptionsDropdown
-                        user={user}
-                        post={post}
-                        onEdit={() => setIsEditModalOpen(true)}
-                        onDelete={onClose}
-                      />
+                    {user.id === session?.user?.id && (
+                        <UserOptionsDropdown
+                          user={user}
+                          post={post}
+                          onEdit={() => setIsEditModalOpen(true)}
+                          onDelete={onClose}
+                        />
                     )}
                     <button
                       onClick={onClose}
