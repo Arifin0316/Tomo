@@ -32,9 +32,7 @@ const ProfileStats = ({
             onClick={openFollowingModal}
           />
         </div>
-      </div>
-
-      {/* Modal Followers */}
+         {/* Modal Followers */}
       {activeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md max-h-[70vh] overflow-hidden shadow-xl">
@@ -60,6 +58,7 @@ const ProfileStats = ({
           </div>
         </div>
       )}
+      </div>
     </>
   );
 };

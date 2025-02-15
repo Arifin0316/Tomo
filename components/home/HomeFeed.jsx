@@ -1,7 +1,13 @@
 "use client";
-
+import SendMessageModal from "../CreatePostModal/SendMessageModal";
 import { useState, useTransition } from "react";
-import { Heart, MessageCircle, Send, Bookmark, MoreVertical } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Bookmark,
+  MoreVertical,
+} from "lucide-react";
 import PostDetailModal from "@/components/CreatePostModal/PostDetailModal";
 import { createOrGetChat, sendMessage } from "@/lib/message";
 import { useSession } from "next-auth/react";
@@ -15,30 +21,19 @@ const HomeFeed = ({ initialPosts }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isPending, startTransition] = useTransition();
+  const [messageReceiver, setMessageReceiver] = useState(null);
 
   const handlePostSelect = (post, user) => {
     setSelectedPost(post);
     setSelectedUser(user);
   };
 
-  const handleSendMessage = async (receiverId) => {
+  const handleSendMessage = (receiver) => {
     if (!session?.user?.id) {
       toast.error("Please log in to send a message");
       return;
     }
-
-    try {
-      const chat = await createOrGetChat(session.user.id, receiverId);
-      const messageContent = prompt("Enter your message:");
-
-      if (messageContent) {
-        await sendMessage(chat.id, session.user.id, messageContent);
-        toast.success("Message sent!");
-      }
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      toast.error("Failed to send message");
-    }
+    setMessageReceiver(receiver);
   };
 
   const handleLike = (postId) => {
@@ -76,6 +71,7 @@ const HomeFeed = ({ initialPosts }) => {
   };
 
   return (
+    <>
     <div className="max-w-xl mx-auto space-y-8 py-8 px-4">
       {posts.map((post) => (
         <div
@@ -144,7 +140,7 @@ const HomeFeed = ({ initialPosts }) => {
                   </span>
                 </button>
                 <button
-                  onClick={() => handleSendMessage(post.user.id)}
+                  onClick={() => handleSendMessage(post.user)}
                   className="group hover:text-gray-600 dark:hover:text-white"
                 >
                   <Send className="w-6 h-6 text-gray-600 dark:text-gray-400 group-hover:text-green-500" />
@@ -175,10 +171,11 @@ const HomeFeed = ({ initialPosts }) => {
             </div>
           </div>
         </div>
+        
       ))}
-
-      {/* Post Detail Modal */}
-      {selectedPost && selectedUser && (
+    </div>
+       {/* Post Detail Modal */}
+       {selectedPost && selectedUser && (
         <PostDetailModal
           user={selectedUser}
           post={selectedPost}
@@ -188,7 +185,13 @@ const HomeFeed = ({ initialPosts }) => {
           }}
         />
       )}
-    </div>
+      {messageReceiver && (
+        <SendMessageModal
+          receiver={messageReceiver}
+          onClose={() => setMessageReceiver(null)}
+        />
+      )}
+    </>
   );
 };
 

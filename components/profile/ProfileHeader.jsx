@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { MoreVertical, Edit, LogOut, Sun, Moon } from 'lucide-react';
 import { toggleFollow } from "@/lib/home";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useTheme } from 'next-themes';
 
 const ProfileHeader = ({followers, user, isOwnProfile }) => {
   const [isFollowing, setIsFollowing] = useState(user.isFollowing || false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { setTheme, resolvedTheme } = useTheme();
 
   const handleToggleFollow = async () => {
     try {
@@ -25,19 +26,7 @@ const ProfileHeader = ({followers, user, isOwnProfile }) => {
       console.error('Error toggling follow:', error);
     }
   };
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    
-    // Implementasi toggle dark mode
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
+  const isDark = resolvedTheme === 'dark';
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl transition-colors duration-300">
@@ -127,10 +116,10 @@ const ProfileHeader = ({followers, user, isOwnProfile }) => {
                         Edit Profile
                       </Link>
                       <button
-                        onClick={toggleDarkMode}
+                         onClick={() => setTheme(isDark ? 'light' : 'dark')}
                         className="flex items-center w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
-                        {isDarkMode ? (
+                        {isDark ? (
                           <>
                             <Sun className="w-4 h-4 mr-2 text-gray-600 dark:text-gray-300" />
                             Light Mode

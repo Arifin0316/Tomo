@@ -40,12 +40,6 @@ const Suggestions = ({ initialSuggestions }) => {
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
           Suggestions for You
         </h2>
-        <Link 
-          href="/discover"
-          className="text-sm text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-        >
-          See All
-        </Link>
       </div>
 
       <div className="space-y-5">

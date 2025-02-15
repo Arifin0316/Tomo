@@ -4,9 +4,10 @@ import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
-
+import { ThemeProvider } from 'next-themes';
 export default function RootLayout({ children }) {
   return (
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
     <div className="min-h-screen bg-gray-50">
       <SessionProvider>
         <Sidebar />
@@ -18,5 +19,6 @@ export default function RootLayout({ children }) {
         
       </SessionProvider>
     </div>
+    </ThemeProvider>
   );
 }
