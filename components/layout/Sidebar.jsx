@@ -164,34 +164,41 @@ export default function Sidebar() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed z-50 bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-700 sm:hidden transition-colors duration-300">
-        <nav className="flex justify-around py-2">
-          {mobileNavItems.map((item) => {
-            if (item.label === 'Buat' || item.isAuthAction) {
-              return (
-                <div key={item.label} onClick={item.onClick} className="cursor-pointer">
-                  <div className={`p-2 rounded-lg text-gray-700 dark:text-gray-300 
-                    ${pathname === item.href ? 'text-blue-500 dark:text-blue-400' : ''}`}>
-                    <div className="w-6 h-6">
-                      {item.icon}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            return (
-              <Link key={item.label} href={item.href}>
-                <div className={`p-2 rounded-lg text-gray-700 dark:text-gray-300 
-                  ${pathname === item.href ? 'text-blue-500 dark:text-blue-400' : ''}`}>
-                  <div className="w-6 h-6">
-                    {item.icon}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+{/* Mobile Bottom Navigation */}
+<div className="fixed z-50 bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-700 sm:hidden transition-colors duration-300">
+  <nav className="flex justify-around py-2">
+    {mobileNavItems.map((item) => {
+      const isActive = pathname === item.href;
+      
+      if (item.label === 'Buat' || item.isAuthAction) {
+        return (
+          <div key={item.label} onClick={item.onClick} className="cursor-pointer">
+            <div className={`p-3 rounded-xl text-gray-700 dark:text-gray-300 transition-colors duration-300
+              ${isActive 
+                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400' 
+                : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
+              <div className="w-6 h-6">
+                {item.icon}
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <Link key={item.label} href={item.href}>
+          <div className={`p-3 rounded-xl text-gray-700 dark:text-gray-300 transition-colors duration-300
+            ${isActive 
+              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400' 
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
+            <div className="w-6 h-6">
+              {item.icon}
+            </div>
+          </div>
+        </Link>
+      );
+    })}
+  </nav>
+</div>
 
       {/* Create Post Modal */}
       <CreatePostModal 

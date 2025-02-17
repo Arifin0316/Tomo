@@ -1,6 +1,14 @@
 import { useState, useTransition } from "react";
-import toast, { Toaster } from 'react-hot-toast';
-import { Heart, MessageCircle, X, MoreVertical, Edit, Trash2, Share2 } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import {
+  Heart,
+  MessageCircle,
+  X,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Share2,
+} from "lucide-react";
 import CommentsSection from "@/components/CreatePostModal/CommentsSection";
 import CommentInput from "@/components/CreatePostModal/CommentInput";
 import EditPostModal from "@/components/CreatePostModal/EditPostModal";
@@ -16,27 +24,27 @@ const UserOptionsDropdown = ({ user, post, onEdit, onDelete }) => {
       <div className="flex flex-col gap-3">
         <p className="font-medium">Delete this post?</p>
         <div className="flex justify-end gap-2">
-          <button 
-            onClick={() => toast.dismiss(t.id)} 
+          <button
+            onClick={() => toast.dismiss(t.id)}
             className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={async () => {
               toast.dismiss(t.id);
               try {
                 const result = await deletePost(post.id);
                 if (result.success) {
-                  toast.success('Post deleted');
+                  toast.success("Post deleted");
                   onDelete();
                 } else {
                   toast.error(result.message);
                 }
               } catch (error) {
-                toast.error('Failed to delete post');
+                toast.error("Failed to delete post");
               }
-            }} 
+            }}
             className="px-4 py-2 text-sm rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
           >
             Delete
@@ -88,9 +96,7 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const isLiked = post.likes?.some(
-    (like) => like.userId === session?.user?.id
-  );
+  const isLiked = post.likes?.some((like) => like.userId === session?.user?.id);
 
   const handleLike = () => {
     if (!session?.user?.id) {
@@ -104,11 +110,12 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
 
         if (result.success) {
           // Update post state with new likes
-          setPost(prev => ({
+          setPost((prev) => ({
             ...prev,
-            likes: result.action === "liked"
-              ? [...prev.likes, { userId: session.user.id }]
-              : prev.likes.filter(like => like.userId !== session.user.id)
+            likes:
+              result.action === "liked"
+                ? [...prev.likes, { userId: session.user.id }]
+                : prev.likes.filter((like) => like.userId !== session.user.id),
           }));
 
           // Show success toast
@@ -119,12 +126,11 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
           toast.error(result.message);
         }
       } catch (error) {
-        console.error('Like error:', error);
+        console.error("Like error:", error);
         toast.error("Failed to update like");
       }
     });
   };
-
 
   return (
     <>
@@ -153,19 +159,21 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
                       className="w-10 h-10 rounded-full ring-2 ring-offset-2 ring-gray-100 dark:ring-gray-800"
                     />
                     <div>
-                      <span className="font-semibold dark:text-white">{user.username}</span>
+                      <span className="font-semibold dark:text-white">
+                        {user.username}
+                      </span>
                       <p className="text-xs text-gray-500">Original Poster</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {user.id === session?.user?.id && (
-                        <UserOptionsDropdown
-                          user={user}
-                          post={post}
-                          onEdit={() => setIsEditModalOpen(true)}
-                          onDelete={onClose}
-                        />
+                      <UserOptionsDropdown
+                        user={user}
+                        post={post}
+                        onEdit={() => setIsEditModalOpen(true)}
+                        onDelete={onClose}
+                      />
                     )}
                     <button
                       onClick={onClose}
@@ -180,7 +188,9 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
               {/* Content & Comments - Scrollable */}
               <div className="flex-grow overflow-y-auto max-h-[300px] md:max-h-[400px]">
                 <div className="p-4">
-                  <p className="text-gray-800 dark:text-gray-200 mb-4">{post.content}</p>
+                  <p className="text-gray-800 dark:text-gray-200 mb-4">
+                    {post.content}
+                  </p>
                 </div>
                 <CommentsSection
                   postId={post.id}
@@ -193,22 +203,22 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
                 {/* Interactions */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
-                  <button 
-              onClick={handleLike}
-              disabled={isPending}
-              className="flex items-center gap-1 group"
-            >
-              <Heart 
-                className={`w-6 h-6 transition-all ${
-                  isLiked 
-                    ? 'fill-red-500 text-red-500 scale-110' 
-                    : 'text-gray-600 dark:text-gray-400 group-hover:text-red-500'
-                } ${isPending ? 'opacity-50' : ''}`} 
-              />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {post.likes?.length || 0}
-              </span>
-            </button>
+                    <button
+                      onClick={handleLike}
+                      disabled={isPending}
+                      className="flex items-center gap-1 group"
+                    >
+                      <Heart
+                        className={`w-6 h-6 transition-all ${
+                          isLiked
+                            ? "fill-red-500 text-red-500 scale-110"
+                            : "text-gray-600 dark:text-gray-400 group-hover:text-red-500"
+                        } ${isPending ? "opacity-50" : ""}`}
+                      />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {post.likes?.length || 0}
+                      </span>
+                    </button>
                     <button className="flex items-center gap-1 group">
                       <MessageCircle className="w-6 h-6 text-gray-600 dark:text-gray-400 group-hover:text-blue-500" />
                       <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -222,9 +232,9 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
                 </div>
 
                 {/* Comment Input */}
-                <CommentInput 
-                  postId={post.id} 
-                  onSubmit={() => setRefreshComments(prev => prev + 1)} 
+                <CommentInput
+                  postId={post.id}
+                  onSubmit={() => setRefreshComments((prev) => prev + 1)}
                 />
               </div>
             </div>
