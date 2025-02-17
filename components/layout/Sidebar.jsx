@@ -129,6 +129,9 @@ export default function Sidebar() {
     { icon: <User />, label: 'Profil', href: `/profile/${session?.user?.username}` },
   ];
 
+  // Filter out search button for mobile navigation
+  const mobileNavItems = navItems.filter(item => item.label !== 'Cari');
+
   return (
     <>
       {/* Sidebar for tablet and desktop */}
@@ -163,7 +166,7 @@ export default function Sidebar() {
       {/* Mobile Bottom Navigation */}
       <div className="fixed z-50 bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-700 sm:hidden transition-colors duration-300">
         <nav className="flex justify-around py-2">
-          {navItems.map((item) => {
+          {mobileNavItems.map((item) => {
             if (item.label === 'Buat' || item.isAuthAction) {
               return (
                 <div key={item.label} onClick={item.onClick} className="cursor-pointer">
