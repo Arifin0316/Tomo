@@ -4,7 +4,8 @@ import {
   Twitter, 
   Instagram, 
   Linkedin, 
-  Copyright 
+  Copyright,
+  Github
 } from 'lucide-react';
 
 const Footer = () => {
@@ -17,10 +18,10 @@ const Footer = () => {
           {/* Logo dan Deskripsi */}
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Nama Aplikasi
+              Tomo
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Deskripsi singkat tentang aplikasi atau platform Anda.
+              Platform media sosial untuk berbagi momen, terhubung dengan teman, dan menemukan inspirasi baru.
             </p>
           </div>
 
@@ -73,26 +74,34 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link 
-                  href="/dashboard" 
+                  href="/profile" 
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  Dashboard
+                  Profil Saya
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/pricing" 
+                  href="/messages" 
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  Harga
+                  Pesan
                 </Link>
               </li>
               <li>
                 <Link 
-                  href="/support" 
+                  href="/help" 
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  Dukungan
+                  Bantuan
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/privacy" 
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Kebijakan Privasi
                 </Link>
               </li>
             </ul>
@@ -104,30 +113,30 @@ const Footer = () => {
               Ikuti Kami
             </h4>
             <div className="flex space-x-4">
-              <a 
-                href="#" 
+              <Link
+                href="https://www.facebook.com/profile.php?id=61550034904693" 
+                target='_blank'
                 className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                aria-label="Facebook"
               >
                 <Facebook size={24} />
-              </a>
-              <a 
-                href="#" 
+              </Link>
+              <Link
+                href="https://www.instagram.com/arifin0316/" 
+                target='_blank'
                 className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                <Twitter size={24} />
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                aria-label="Instagram"
               >
                 <Instagram size={24} />
-              </a>
-              <a 
-                href="#" 
+              </Link>
+              <Link
+                href="https://github.com/Arifin0316" 
+                target='_blank'
                 className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                aria-label="LinkedIn"
               >
-                <Linkedin size={24} />
-              </a>
+                <Github size={24} />
+              </Link>
             </div>
           </div>
         </div>
@@ -136,7 +145,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t dark:border-gray-700 text-center">
           <div className="flex items-center justify-center text-gray-600 dark:text-gray-400">
             <Copyright size={16} className="mr-2" />
-            <span>{currentYear} Nama Aplikasi. Hak Cipta Dilindungi.</span>
+            <span>{currentYear} Tomo. Hak Cipta Dilindungi.</span>
           </div>
         </div>
       </div>
