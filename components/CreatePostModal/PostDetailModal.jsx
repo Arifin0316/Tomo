@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { Heart, MessageCircle, X, MoreVertical, Edit, Trash2, Share2 } from "lucide-react";
 import CommentsSection from "@/components/CreatePostModal/CommentsSection";
@@ -6,6 +6,7 @@ import CommentInput from "@/components/CreatePostModal/CommentInput";
 import EditPostModal from "@/components/CreatePostModal/EditPostModal";
 import { deletePost } from "@/lib/posting";
 import { useSession } from "next-auth/react";
+import { togglePostLike } from "@/lib/home";
 
 const UserOptionsDropdown = ({ user, post, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +86,45 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
   const [post, setPost] = useState(initialPost);
   const [refreshComments, setRefreshComments] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const isLiked = post.likes?.some(
+    (like) => like.userId === session?.user?.id
+  );
+
+  const handleLike = () => {
+    if (!session?.user?.id) {
+      toast.error("Please log in to like posts");
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await togglePostLike(post.id);
+
+        if (result.success) {
+          // Update post state with new likes
+          setPost(prev => ({
+            ...prev,
+            likes: result.action === "liked"
+              ? [...prev.likes, { userId: session.user.id }]
+              : prev.likes.filter(like => like.userId !== session.user.id)
+          }));
+
+          // Show success toast
+          toast(result.action === "liked" ? "Post liked!" : "Post unliked", {
+            icon: result.action === "liked" ? "❤️" : "💔",
+          });
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        console.error('Like error:', error);
+        toast.error("Failed to update like");
+      }
+    });
+  };
+
 
   return (
     <>
@@ -154,21 +193,22 @@ const PostDetailModal = ({ user, onClose, post: initialPost }) => {
                 {/* Interactions */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
-                    <button 
-                      onClick={() => setIsLiked(!isLiked)}
-                      className="flex items-center gap-1 group"
-                    >
-                      <Heart 
-                        className={`w-6 h-6 transition-all ${
-                          isLiked 
-                            ? 'fill-red-500 text-red-500 scale-110' 
-                            : 'text-gray-600 dark:text-gray-400 group-hover:text-red-500'
-                        }`} 
-                      />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {post.likes?.length || 0}
-                      </span>
-                    </button>
+                  <button 
+              onClick={handleLike}
+              disabled={isPending}
+              className="flex items-center gap-1 group"
+            >
+              <Heart 
+                className={`w-6 h-6 transition-all ${
+                  isLiked 
+                    ? 'fill-red-500 text-red-500 scale-110' 
+                    : 'text-gray-600 dark:text-gray-400 group-hover:text-red-500'
+                } ${isPending ? 'opacity-50' : ''}`} 
+              />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {post.likes?.length || 0}
+              </span>
+            </button>
                     <button className="flex items-center gap-1 group">
                       <MessageCircle className="w-6 h-6 text-gray-600 dark:text-gray-400 group-hover:text-blue-500" />
                       <span className="text-sm text-gray-600 dark:text-gray-400">

@@ -40,9 +40,6 @@ export default function LoginPage() {
           <div className="mx-auto h-16 w-16 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
             <Lock className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
-            Login ke Dashboard
-          </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
             Selamat datang kembali! Silakan masuk ke akun Anda.
           </p>
