@@ -18,7 +18,7 @@ const Footer = () => {
           {/* Logo dan Deskripsi */}
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Tomo
+            pixly.
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
               Platform media sosial untuk berbagi momen, terhubung dengan teman, dan menemukan inspirasi baru.
@@ -145,7 +145,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t dark:border-gray-700 text-center">
           <div className="flex items-center justify-center text-gray-600 dark:text-gray-400">
             <Copyright size={16} className="mr-2" />
-            <span>{currentYear} Tomo. Hak Cipta Dilindungi.</span>
+            <span>{currentYear} pixly. Hak Cipta Dilindungi.</span>
           </div>
         </div>
       </div>
