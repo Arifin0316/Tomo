@@ -7,6 +7,7 @@ import {
   Send,
   Bookmark,
   MoreVertical,
+  User,
 } from "lucide-react";
 import PostDetailModal from "@/components/CreatePostModal/PostDetailModal";
 import { useSession } from "next-auth/react";
@@ -92,9 +93,27 @@ const HomeFeed = ({ initialPosts }) => {
                 {post.user.username}
               </span>
             </Link>
-            <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors">
-              <MoreVertical className="w-5 h-5" />
-            </button>
+            <Link
+            href={`profile/${post.user.username}`}
+                  className="group flex items-center justify-center space-x-2 px-4 py-2 
+        rounded-lg font-medium text-sm 
+        bg-gradient-to-br from-blue-50 to-blue-100 
+        dark:from-gray-800 dark:to-gray-700 
+        text-blue-800 dark:text-blue-200
+        border border-blue-200/50 dark:border-gray-600
+        hover:shadow-md hover:scale-105 
+        transition-all duration-300 ease-in-out
+        focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700
+        active:scale-95"
+                >
+                  <span>
+                  profile
+                  </span>
+                <User
+                className="w-5 h-5 
+                text-blue-600 dark:text-blue-400"
+                />
+                </Link>
           </div>
 
           {/* Post Image */}
