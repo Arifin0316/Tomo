@@ -9,7 +9,6 @@ import {
   MoreVertical,
 } from "lucide-react";
 import PostDetailModal from "@/components/CreatePostModal/PostDetailModal";
-import { createOrGetChat, sendMessage } from "@/lib/message";
 import { useSession } from "next-auth/react";
 import { togglePostLike } from "@/lib/home";
 import toast from "react-hot-toast";
@@ -33,7 +32,7 @@ const HomeFeed = ({ initialPosts }) => {
       toast.error("Please log in to send a message");
       return;
     }
-    setMessageReceiver(receiver);
+    console.log(receiver)
   };
 
   const handleLike = (postId) => {
